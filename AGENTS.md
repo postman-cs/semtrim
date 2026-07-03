@@ -85,9 +85,14 @@ Run `npm test`, both smoke scripts, and the version-sync gate before committing.
 
 - Claude `updatedToolOutput` MUST match the tool's output shape. Bash is
   `{stdout,stderr,interrupted,isImage}`; a bare string is silently ignored.
-- Claude PostToolUse Bash output replacement is unreliable
-  (anthropics/claude-code#65122, #54196). Treat PreToolUse wrap as the reliable
-  path; PostToolUse is best-effort (Read is the dependable consumer).
+- Claude PostToolUse replacement for Bash is best-effort, not unreliable as
+  such: validated against the installed `2.1.199` binary, the host rewrites the
+  output only after `outputSchema.safeParse` succeeds and **silently reverts**
+  to the original on any schema mismatch (logged at `error`, never thrown).
+  anthropics/claude-code#65122 is closed-as-duplicate and #54196 is closed-stale;
+  neither confirms nor denies current-version honoring, so treat PreToolUse wrap
+  as the reliable path. PostToolUse remains best-effort, with **Read** the
+  dependable consumer (no command to wrap, and Read replacement lands reliably).
 - Codex does NOT support PostToolUse output replacement; its adapter is a no-op
   there and compresses via PreToolUse wrap only. Codex intercepts simple shell
   calls only.

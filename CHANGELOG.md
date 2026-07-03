@@ -6,7 +6,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-06-26
+## [0.1.3] - 2026-07-02
+
+### Changed
+
+- Docs: replaced the "unreliable for Bash" PostToolUse claim with validated
+  findings. Verified against the installed Claude Code `2.1.199` binary: the
+  PostToolUse handler parses `hookSpecificOutput.updatedToolOutput` against the
+  tool's `outputSchema` and **silently reverts** to the original output on any
+  schema mismatch (logged at `error`, never thrown). The replacement is
+  therefore best-effort, not categorically broken.
+  anthropics/claude-code#65122 is closed-as-duplicate and #54196 is closed-stale;
+  neither confirms current-version honoring, so the PreToolUse command-wrap
+  remains the reliable default. Read replacement is the dependable PostToolUse
+  consumer.
 
 ### Fixed
 

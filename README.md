@@ -19,11 +19,16 @@ clean-room reimplementation in Node). See `docs/boost-derived-rules.md`.
 
 ## Two layers
 
-Claude Code's `PostToolUse` output replacement is **unreliable for Bash** on
-current versions: per the hooks reference the replacement must match the tool's
-structured shape, and even then Bash replacement is reported dropped
-([anthropics/claude-code#65122](https://github.com/anthropics/claude-code/issues/65122),
-[#54196](https://github.com/anthropics/claude-code/issues/54196)). semtrim
+Claude Code's `PostToolUse` output replacement is **best-effort for Bash**:
+the replacement must survive the host's `outputSchema` validation, and on any
+mismatch the host **silently reverts** to the original output (a logged error,
+never an exception). Tracking issues remain unresolved
+([anthropics/claude-code#65122](https://github.com/anthropics/claude-code/issues/65122)
+closed as duplicate,
+[#54196](https://github.com/anthropics/claude-code/issues/54196) closed-stale).
+Verified against the installed `2.1.199` binary: the schema-parse-and-revert
+code path is present for non-MCP tools (Bash, Read), but a positive confirmation
+that a given build honors Bash replacement requires a live probe. semtrim
 therefore uses two layers:
 
 1. **PreToolUse command-wrap (reliable default).** Before a recognized Bash
